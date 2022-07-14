@@ -24,7 +24,9 @@ const userSchema = new mongoose.Schema({
     maxLen: 55,
     trim: true,
   },
-
+  soldAccount: {
+    type: String,
+  },
   historicAccount: {
     type: [String],
   },
