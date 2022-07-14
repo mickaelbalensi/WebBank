@@ -1,25 +1,16 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "../../pages/Home";
 import Profil from "../../pages/Profil";
-import Administrator from "../../pages/Administrator";
 
-const index = () => {
+function App() {
   return (
-    <Router>
+    <div className="App">
       <Routes>
-        <Route path="/" exact component={Home} />
-        <Route path="/" exact component={Profil} />
-        <Route path="/" exact component={Administrator} />
-        <Navigate to="/" />
+        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Profil />} />
       </Routes>
-    </Router>
+    </div>
   );
-};
+}
 
-export default index;
+export default App;
