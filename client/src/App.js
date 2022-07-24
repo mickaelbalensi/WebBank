@@ -1,14 +1,19 @@
-import React from "react";
-import { BrowserRouter } from "react-router-dom";
+// routes
+import Router from './routes';
+// theme
+import ThemeProvider from './theme';
+// components
+import ScrollToTop from './components/ScrollToTop';
+import { BaseOptionChartStyle } from './components/chart/BaseOptionChart';
 
-function App() {
+// ----------------------------------------------------------------------
+
+export default function App() {
   return (
-    <BrowserRouter>
-      <header>
-        <div>Hello World</div>
-      </header>
-    </BrowserRouter>
+    <ThemeProvider>
+      <ScrollToTop />
+      <BaseOptionChartStyle />
+      <Router />
+    </ThemeProvider>
   );
 }
-
-export default App;
