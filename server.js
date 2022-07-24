@@ -12,6 +12,4 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/user", userRoutes);
 
 //server
-app.listen(process.env.PORT, () => {
-  console.log("Listening on port", process.env.PORT);
-});
+app.listen(process.env.PORT, () => console.log("🚀 Server Launched - Listening on port", process.env.PORT));
