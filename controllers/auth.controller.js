@@ -1,13 +1,48 @@
-const UserModel = require("../models/user.model");
+const User = require("../models/user.model");
+const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken")
+require("dotenv").config({ path: "./config/.env" });
 
-module.exports.signUp = async (req, res) => {
-  console.log(req.body);
-  const { name, userName, password } = req.body;
+module.exports.RegisterController = async (req, res) => {
+  console.log("ce que tu veux", req.body)
+  const exist = await User.findOne({ userName: req.body.userName });
 
-  try {
-    const user = await UserModel.create({ name, userName, password });
-    res.status(201).json({ user: user._id });
-  } catch (err) {
-    res.status(200).send({ err });
-  }
+  if (exist !== null)
+    return res
+      .status(303)
+      .json({ userName: "This username already exists" })
+
+  const hashedPassword = await bcrypt.hash(req.body.password,10);
+  const user = await User.create({ 
+    ...req.body,
+    password : hashedPassword
+  });
+  res.status(201).json({ user: user.id });
+};
+
+
+module.exports.LoginController = async (req,res) => { 
+  // Checks that the user exist
+  console.log("ce que tu veux", req.body)
+  const user = await User.findOne({ userName: req.body.userName });
+
+  if (user === null)
+    return res
+      .status(404)
+      .json({ email: "There is no account associated with this email" })
+
+  // Compare password hash
+  const passwordMatch = await bcrypt.compare(req.body.password, user.password);
+
+  if (!passwordMatch)
+    return res.status(400).json({ password: "The password is invalid" })
+
+  // Create JWT, then return it
+  const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, {
+    expiresIn: 3600 * 24,
+  })
+
+  return res
+    .status(200)
+    .json({token, id: user.id, name: user.name, manager: user.manager })
 };
