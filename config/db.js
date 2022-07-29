@@ -1,7 +1,9 @@
+require("dotenv").config({ path: "./config/.env" });
+
 const mongoose = require("mongoose");
 mongoose
   .connect(
-    "mongodb+srv://aviel:123@cluster0.dlj2uh3.mongodb.net/mern-project",
+    process.env.MONGOLAB_URI,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,

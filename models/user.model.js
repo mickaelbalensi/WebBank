@@ -36,7 +36,6 @@ const userSchema = new mongoose.Schema({
   NameSource: {
     type: [String],
   },
-
   creditDestination: {
     type: [String],
   },
