@@ -5,12 +5,13 @@ module.exports = {
     Authorization : async (req,res,next) => {
         let { authorization } = req.headers;
         if (authorization === undefined || !authorization.startsWith("Bearer "))
+        {
             return res.status(401).end();
-
+        }
         const token = authorization.substring("Bearer ".length);
 
         let payload;
-
+        
         // Check that the token is valid
         try {
             payload = jwt.verify(token, process.env.TOKEN_SECRET);
@@ -33,9 +34,16 @@ module.exports = {
     },
 
     IsManager : async (req, res, next) => {
-    if (req.user.manager === false)
-        return res.status(403).end("You must be a manager");
+        if (req.user.manager === false)
+            return res.status(403).end("You must be a manager");
 
-    next();
+        next();
+    },
+    TotalBankAccount : async(req,res,next)=>{ 
+        const listUsers = await User.find(); 
+        const length = listUsers.length; 
+        
+        req.totalCount = length; 
+        next();     
     }
 }
