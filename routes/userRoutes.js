@@ -1,14 +1,10 @@
 const router = require("express").Router();
-const {RegisterController, LoginController} = require("../controllers/auth.controller");
+
+const {Authorization} = require("../middleware/auth_middleware");
 const userController = require("../controllers/user.controller");
 
-//auth
-
-router.post("/register", RegisterController);
-router.post("/login", LoginController);
-
 // userDisplay
-router.get("/", userController.getAllUsers);
+router.get("/",Authorization, userController.getAllUsers);
 
 //choise by id
 router.get("/:id", userController.userInfo);
@@ -16,5 +12,6 @@ router.get("/:id", userController.userInfo);
 //update
 router.put("/:id", userController.updateUser);
 
+router.post("/updateUser",Authorization, userController.updateController);
 //export
 module.exports = router;

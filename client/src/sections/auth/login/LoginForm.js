@@ -7,19 +7,17 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { login } from '../../../api/authentication';
-
+// api
+import {login} from '../../../api/auth';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
-
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-
 
   const [formState, setFormState] = useState({
     userName: "",
@@ -40,6 +38,7 @@ export default function LoginForm() {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
 
   const onSubmit = async () => {
     const { id, token, name, manager } = await login(formState)

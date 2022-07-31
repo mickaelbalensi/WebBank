@@ -1,7 +1,7 @@
-import * as Yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
 
 // form
 import { useForm } from 'react-hook-form';
@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { register } from '../../../api/authentication';
+import { register } from '../../../api/auth';
 
 // components
 import Iconify from '../../../components/Iconify';
@@ -21,19 +21,23 @@ export default function RegisterForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-
- 
-
   const [formState, setFormState] = useState({
     name: "",
     userName: "",
     password: "",
   })
 
+
+  const [firstName, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const methods = useForm({
      mode: 'onChange',
      reValidateMode: 'onSubmit',
      formState,    
+
   });
 
   const handleChange = (e) =>

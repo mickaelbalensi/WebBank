@@ -3,8 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken")
 require("dotenv").config({ path: "./config/.env" });
 
+
 module.exports.RegisterController = async (req, res) => {
-  console.log("ce que tu veux", req.body)
+  console.log(req.body);
   const exist = await User.findOne({ userName: req.body.userName });
 
   if (exist !== null)
@@ -15,7 +16,8 @@ module.exports.RegisterController = async (req, res) => {
   const hashedPassword = await bcrypt.hash(req.body.password,10);
   const user = await User.create({ 
     ...req.body,
-    password : hashedPassword
+    password : hashedPassword,
+    numAccount : req.totalCount
   });
   res.status(201).json({ user: user.id });
 };
@@ -23,7 +25,6 @@ module.exports.RegisterController = async (req, res) => {
 
 module.exports.LoginController = async (req,res) => { 
   // Checks that the user exist
-  console.log("ce que tu veux", req.body)
   const user = await User.findOne({ userName: req.body.userName });
 
   if (user === null)
@@ -45,4 +46,6 @@ module.exports.LoginController = async (req,res) => {
   return res
     .status(200)
     .json({token, id: user.id, name: user.name, manager: user.manager })
-};
+
+}
+

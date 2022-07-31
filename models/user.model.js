@@ -1,5 +1,24 @@
 const mongoose = require("mongoose");
 
+const LoanSchema = mongoose.Schema({
+  _id: false,
+  id: { type: String, required: true },
+  borrowerAccount : { type: Number, required: true },
+  lenderAccount: { type: Number, required: true },
+  amount: { type: Number, required: true },
+  status: { type: String, default: 'asked'},
+  dateRequest : {type: Date, required: true},
+  dateLoan : {type: Date},
+  dateRefund : {type: Date},
+  duration: {type: Number}
+})
+const TransactionSchema = mongoose.Schema({
+  date  :{type:Date,required:true},
+  acutalAmount :{type:Number,required:true},
+  credit  :{type:Number},
+  debit :{type:Number} , 
+  bankCustomer :{type:String,required:true}
+})
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -24,25 +43,15 @@ const userSchema = new mongoose.Schema({
     maxLen: 55,
     trim: true,
   },
+  numAccount : {
+    type: Number, required : true
+  },
   soldAccount: {
-    type: String,
+    type: Number, default:'1000'
   },
-  historicAccount: {
-    type: [String],
-  },
-  creditSource: {
-    type: [String],
-  },
-  NameSource: {
-    type: [String],
-  },
-
-  creditDestination: {
-    type: [String],
-  },
-  nameDestination: {
-    type: [String],
-  },
+  loanList :  {type:[LoanSchema], default:[]},
+  isAdmin : {type: Boolean, default:false},
+  transactionList : {type:[TransactionSchema], default:[]}
 });
 
 const UserModel = mongoose.model("user", userSchema);
