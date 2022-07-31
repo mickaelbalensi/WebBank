@@ -7,10 +7,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+// api
+import {login} from '../../../api/auth';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
-
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
@@ -18,20 +19,27 @@ export default function LoginForm() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
-  });
+  // const LoginSchema = Yup.object().shape({
+  //   userName : Yup.string().required('userName is required'),
+  //   // email: Yup.string().email('Email must be a valid email address').required('Email is required'),
+  //   password: Yup.string().required('Password is required'),
+  // });
 
-  const defaultValues = {
-    email: '',
-    password: '',
-    remember: true,
+  const [user,setUserName] = useState('first');
+  const [pass,setPassword] = useState('pass');
+  const [reme,setRemember] = useState(true);  
+
+  const values = {
+    userName: user,
+    password: pass,
+    remember: reme,
   };
 
   const methods = useForm({
-    resolver: yupResolver(LoginSchema),
-    defaultValues,
+    // mode: 'onChange',
+    // reValidateMode: 'onChange',
+    // resolver: yupResolver(LoginSchema),
+    // values,
   });
 
   const {
@@ -39,7 +47,10 @@ export default function LoginForm() {
     formState: { isSubmitting },
   } = methods;
 
+
   const onSubmit = async () => {
+    console.log('valuesvaluesvalues',values);
+    await login(values);
     navigate('/dashboard', { replace: true });
   };
 

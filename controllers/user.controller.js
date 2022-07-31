@@ -42,4 +42,15 @@ module.exports.updateUser = async (req, res) => {
     return res.status(500).json({ message: err });
   }
 };
-// t
+
+module.exports.updateController = async (req,res) => {
+  console.log(req.body);
+  const user = req.user;
+  
+  UserModel.findByIdAndUpdate(user.id, req.body, function(err) {
+    if (err) {
+      console.log(err);
+    }
+  })
+  return res.status(200).json({id: user.id, nameConnected: req.user.name});
+};
