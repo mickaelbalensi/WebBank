@@ -4,9 +4,6 @@ const jwt = require("jsonwebtoken")
 require("dotenv").config({ path: "./config/.env" });
 
 
-
-
-
 module.exports.RegisterController = async (req, res) => {
   console.log(req.body);
   const exist = await User.findOne({ userName: req.body.userName });
@@ -24,6 +21,7 @@ module.exports.RegisterController = async (req, res) => {
   });
   res.status(201).json({ user: user.id });
 };
+
 
 module.exports.LoginController = async (req,res) => { 
   // Checks that the user exist
@@ -48,4 +46,6 @@ module.exports.LoginController = async (req,res) => {
   return res
     .status(200)
     .json({token, id: user.id, name: user.name, manager: user.manager })
+
 }
+

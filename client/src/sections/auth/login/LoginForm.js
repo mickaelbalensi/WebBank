@@ -19,28 +19,20 @@ export default function LoginForm() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  // const LoginSchema = Yup.object().shape({
-  //   userName : Yup.string().required('userName is required'),
-  //   // email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-  //   password: Yup.string().required('Password is required'),
-  // });
-
-  const [user,setUserName] = useState('first');
-  const [pass,setPassword] = useState('pass');
-  const [reme,setRemember] = useState(true);  
-
-  const values = {
-    userName: user,
-    password: pass,
-    remember: reme,
-  };
+  const [formState, setFormState] = useState({
+    userName: "",
+    password: "",
+  })
 
   const methods = useForm({
-    // mode: 'onChange',
-    // reValidateMode: 'onChange',
-    // resolver: yupResolver(LoginSchema),
-    // values,
+    mode: onchange,
   });
+
+  const handleChange = (e) =>
+  setFormState({
+    ...formState,
+    [e.target.name]: e.target.value,
+  })
 
   const {
     handleSubmit,
@@ -49,20 +41,26 @@ export default function LoginForm() {
 
 
   const onSubmit = async () => {
-    console.log('valuesvaluesvalues',values);
-    await login(values);
+    const { id, token, name, manager } = await login(formState)
+    sessionStorage.setItem("token", token)
+    sessionStorage.setItem("id", id)
+    sessionStorage.setItem("name", name)
+    sessionStorage.setItem("manager", manager)
     navigate('/dashboard', { replace: true });
   };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
-        <RHFTextField name="email" label="Email address" />
+        <RHFTextField name="userName" label="userName" value={formState.userName} onChange={handleChange} required/>
 
         <RHFTextField
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
+          value={formState.password}
+          onChange={handleChange}
+          required
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">

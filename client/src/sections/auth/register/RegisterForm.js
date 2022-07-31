@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 // form
 import { useForm } from 'react-hook-form';
@@ -19,19 +21,12 @@ export default function RegisterForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [formState, setFormState] = useState({
+    name: "",
+    userName: "",
+    password: "",
+  })
 
-  // const RegisterSchema = Yup.object().shape({
-  //   firstName: Yup.string().required('First name required'),
-  //   lastName: Yup.string().required('Last name required'),
-  //   email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-  //   password: Yup.string().required('Password is required'),
-  // });
-
-  const defaultValues = {
-    userName: 'name222',
-    name: 'last222',
-    password: 'pass',
-  };
 
   const [firstName, setName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -39,11 +34,17 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
 
   const methods = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-    // resolver: yupResolver(RegisterSchema),
-    
+     mode: 'onChange',
+     reValidateMode: 'onSubmit',
+     formState,    
+
   });
+
+  const handleChange = (e) =>
+  setFormState({
+    ...formState,
+    [e.target.name]: e.target.value,
+  })
 
   const {
     handleSubmit,
@@ -51,27 +52,27 @@ export default function RegisterForm() {
   } = methods;
 
   const onSubmit = async () => {
-    console.log("iciiii")
-    const a = await register(defaultValues);
-    console.log(a);
-    navigate('/dashboard/app', { replace: true });    
+    register(formState) 
+    navigate('/dashboard', { replace: true });
   };
    
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <RHFTextField name="firstName" label="First name" value={firstName} onChange={(e) => setName(e.target.value)} />
-          <RHFTextField name="lastName" label="Last name"  />
+          <RHFTextField name="name" label="First name" value={formState.name} onChange={handleChange} required/>
+          <RHFTextField name="userName" label="Last name" value={formState.userName} onChange={handleChange} required />
         </Stack>
 
-        <RHFTextField name="email" label="Email address"  onChange={(e) => setEmail(e.target.value)}/>
+        <RHFTextField name="email" label="Email address"  />
 
         <RHFTextField
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formState.password} 
+          onChange={handleChange}
+          required
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
