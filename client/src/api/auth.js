@@ -1,19 +1,16 @@
 import axios from "axios"
 
 // { token: Token, name: String, manager: Boolean }
-export const login = (data) =>{
-  console.log('data',data);
-  axios
-  .post("http://localhost:5555/api/user/login", data)
+export const login = (data) =>
+   axios
+  .post("http://localhost:5555/api/auth/login", data)
   .then((res) => res.data)
-}
-
 
 export const register = async (data) => {
   console.log('data',data);
 
-  await axios
-    .post("http://localhost:5555/api/user/register", data)
+  return await axios
+    .post("http://localhost:5555/api/auth/register", data)
     .then((res) => res.data)
     .catch((err)=>console.log(err))
 }

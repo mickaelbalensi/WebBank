@@ -40,6 +40,11 @@ const authOption = [
       setOpen(null);
     };
   
+    const logout = () => {
+      sessionStorage.clear();
+      navigate("/dashboard/app");
+      handleClose();
+    };
     return (
       <>
         <IconButton
@@ -96,7 +101,7 @@ const authOption = [
   
           <Divider sx={{ borderStyle: 'dashed' }} />
   
-          <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+          <MenuItem onClick={logout} sx={{ m: 1 }}>
             Logout
           </MenuItem>
         </MenuPopover>

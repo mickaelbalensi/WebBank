@@ -5,7 +5,6 @@ require("dotenv").config({ path: "./config/.env" });
 
 
 module.exports.RegisterController = async (req, res) => {
-  console.log(req.body);
   const exist = await User.findOne({ userName: req.body.userName });
 
   if (exist !== null)
@@ -42,10 +41,18 @@ module.exports.LoginController = async (req,res) => {
   const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, {
     expiresIn: 3600 * 24,
   })
-
   return res
     .status(200)
-    .json({token, id: user.id, name: user.name, manager: user.manager })
+    .json({
+      id: user.id,
+      token,
+      name: user.name,
+      manager: user.isAdmin,
+      numAccount:user.numAccount,
+      soldAccount: user.soldAccount,
+      loanList:user.loanList,
+      transactionList:user.transactionList
+     })
 
 }
 

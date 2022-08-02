@@ -143,13 +143,14 @@ export default function NavSection({ navConfig, ...other }) {
   const { pathname } = useLocation();
 
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
-
+  const manager = sessionStorage.getItem('manager');
   return (
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>
-        {navConfig.map((item) => (
-          <NavItem key={item.title} item={item} active={match} />
-        ))}
+        {navConfig.map((item) => 
+            (item.title !== 'dashboard' || manager) &&(
+            <NavItem key={item.title} item={item} active={match} />
+          ))}
       </List>
     </Box>
   );

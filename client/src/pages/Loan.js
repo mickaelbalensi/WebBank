@@ -31,10 +31,11 @@ import USERLIST from '../_mock/user';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
+  { id: 'id', label: 'Loan ID', alignRight: false },
+  { id: 'borrowerAccount', label: 'Borrower', alignRight: false },
+  { id: 'lenderAccount', label: 'Lender', alignRight: false },
+  { id: 'amount', label: 'Amount', alignRight: false },
+  { id: 'dateRequest', label: 'Date Request', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' },
 ];
@@ -70,15 +71,41 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function User() {
-  
+export default function Loans() {
+  const loanList = [           
+    {
+      id: "l6aycbgy",
+      borrowerAccount: 0,
+      lenderAccount: 1,
+      amount: 10,
+      status: "asked",
+      dateRequest: "01/08/2022"
+},
+{
+  id: "l6aycbgy",
+  borrowerAccount: 20,
+  lenderAccount: 1,
+  amount: 5,
+  status: "declined",
+  dateRequest: "02/08/2021"
+},
+{
+  id: "l6aycbgy",
+  borrowerAccount: 15,
+  lenderAccount: 0,
+  amount: 5,
+  status: "refund",
+  dateRequest: "01/09/2022"
+},
+]
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
-  const [selected, setSelected] = useState([]);
+  //const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('id');
 
   const [filterName, setFilterName] = useState('');
 
@@ -92,7 +119,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = loanList.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -124,25 +151,24 @@ export default function User() {
   };
 
   const handleFilterByName = (event) => {
-    console.log('event.target.value : ',event.target.value);
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - loanList.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredLoans = applySortFilter(loanList, getComparator(order, orderBy), filterName);
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const isUserNotFound = filteredLoans.length === 0;
 
   return (
     <Page title="User">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Loan
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
+          <Button variant="contained" component={RouterLink} to="/dashboard/borrow" startIcon={<Iconify icon="eva:plus-fill" />}>
+            Borrow
           </Button>
         </Stack>
 
@@ -154,18 +180,19 @@ export default function User() {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <UserListHead order={order}
+                <UserListHead
+                  order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
+                  rowCount={loanList.length}
+                  // numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                  {filteredLoans.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { id, borrowerAccount, lenderAccount, amount, status, dateRequest, dateLoan, duration } = row;
+                    // const isItemSelected = selected.indexOf(row.borrowerAccount) !== -1;
 
                     return (
                       <TableRow
@@ -173,25 +200,28 @@ export default function User() {
                         key={id}
                         tabIndex={-1}
                         role="checkbox"
-                        // selected={isItemSelected}
-                        aria-checked={isItemSelected}
+                      //  selected={isItemSelected}
+                      //  aria-checked={isItemSelected}
                       >
                         {/* <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
+                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, borrowerAccount)} />
                         </TableCell> */}
-                        <TableCell component="th" scope="row" padding="5">
+                        <TableCell align="left">{id}</TableCell>
+                        <TableCell align="left">{borrowerAccount}</TableCell>
+                        {/* <TableCell component="th" scope="row" padding="25">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
+                            {/* <Avatar alt={row.borrowerAccount} src={avatarUrl} /> *}
                             <Typography variant="subtitle2" noWrap>
-                              {name}
+                              {borrowerAccount}
                             </Typography>
                           </Stack>
-                        </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                        </TableCell> */}
+                        <TableCell align="left">{lenderAccount}</TableCell>
+                        <TableCell align="left">{amount}</TableCell>
+                        <TableCell align="left">{dateRequest}</TableCell>
+                        {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
+                          <Label variant="ghost" color={(status === 'declined' && 'error') || 'success'}>
                             {sentenceCase(status)}
                           </Label>
                         </TableCell>
@@ -225,7 +255,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={loanList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

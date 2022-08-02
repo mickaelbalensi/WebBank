@@ -26,16 +26,15 @@ import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
 // mock
-import USERLIST from '../_mock/user';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
+  { id: 'date', label: 'Date', alignRight: false },
+  { id: 'acutalAmount', label: 'Amount', alignRight: false },
+  { id: 'credit', label: 'Credit', alignRight: false },
+  { id: 'debit', label: 'Debit', alignRight: false },
+  { id: 'bankCustomer', label: 'From/To', alignRight: false },
   { id: '' },
 ];
 
@@ -70,15 +69,73 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function User() {
-  
+export default function Transaction() {
+  const transactionList = [           
+    {
+      date:'2022-07-31',
+      acutalAmount: 200,
+      debit: '',
+      credit: '+20₪',
+      bankCustomer: "user2"
+    },
+    {
+      date:'2022-07-31',
+      acutalAmount: 150,
+      debit: '',
+      credit: '20',
+      bankCustomer: "user2"
+    },
+    {
+      date:'2022-07-31',
+      acutalAmount: 130,
+      credit: '',
+      debit: '20',
+      bankCustomer: "user2"
+    },
+    {
+      date:'2022-07-31',
+      acutalAmount: 200,
+      debit: '',
+      credit: '20',
+      bankCustomer: "user2"
+    },
+    {
+      date:'2022-07-31',
+      acutalAmount: 200,
+      credit: '',
+      debit: '30',
+      bankCustomer: "sarah"
+    },
+    {
+      date:'2022-07-31',
+      acutalAmount: 200,
+      debit: '',
+      credit: '50',
+      bankCustomer: "micko"
+    },
+    {
+      date:'2022-07-31',
+      acutalAmount: 200,
+      debit: '',
+      credit: '10',
+      bankCustomer: "aviel"
+    },
+    {
+      date:'2022-07-31',
+      acutalAmount: 200,
+      credit: '',
+      debit: '20',
+      bankCustomer: "nathane"
+    },
+  ]
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
-  const [selected, setSelected] = useState([]);
+  //const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('id');
 
   const [filterName, setFilterName] = useState('');
 
@@ -92,7 +149,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = transactionList.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -124,25 +181,24 @@ export default function User() {
   };
 
   const handleFilterByName = (event) => {
-    console.log('event.target.value : ',event.target.value);
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - transactionList.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredTransactions = applySortFilter(transactionList, getComparator(order, orderBy), filterName);
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const isUserNotFound = filteredTransactions.length === 0;
 
   return (
     <Page title="User">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Loan
           </Typography>
           <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
+            Borrow
           </Button>
         </Stack>
 
@@ -154,18 +210,18 @@ export default function User() {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <UserListHead order={order}
+                <UserListHead
+                  order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
+                  rowCount={transactionList.length}
+                  // numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                  {filteredTransactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { id, date, acutalAmount, credit, debit, bankCustomer } = row;
 
                     return (
                       <TableRow
@@ -173,28 +229,24 @@ export default function User() {
                         key={id}
                         tabIndex={-1}
                         role="checkbox"
-                        // selected={isItemSelected}
-                        aria-checked={isItemSelected}
                       >
-                        {/* <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
-                        </TableCell> */}
-                        <TableCell component="th" scope="row" padding="5">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                        <TableCell align="left">{date}</TableCell>
+                        <TableCell align="left">{acutalAmount}</TableCell>
+                        {/* <TableCell align="left">{credit}</TableCell> */}
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
-                            {sentenceCase(status)}
-                          </Label>
+                          {credit !== '' &&
+                          <Label variant="ghost" color={(credit === '' && 'error') || 'success'}>
+                            {sentenceCase('+'+credit+'₪')}
+                          </Label>}
                         </TableCell>
+                        <TableCell align="left">
+                          {credit === '' &&
+                            <Label variant="ghost" color={(credit === '' && 'error') || 'success'}>
+                              {sentenceCase(`-{debit}₪`)}
+                            </Label>}
+                        </TableCell>
+                        {/* <TableCell align="left">{debit}</TableCell> */}
+                        <TableCell align="left">{bankCustomer}</TableCell>
 
                         <TableCell align="right">
                           <UserMoreMenu />
@@ -225,7 +277,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={transactionList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

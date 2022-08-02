@@ -18,7 +18,6 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-
   const [formState, setFormState] = useState({
     userName: "",
     password: "",
@@ -41,12 +40,24 @@ export default function LoginForm() {
 
 
   const onSubmit = async () => {
-    const { id, token, name, manager } = await login(formState)
-    sessionStorage.setItem("token", token)
-    sessionStorage.setItem("id", id)
-    sessionStorage.setItem("name", name)
-    sessionStorage.setItem("manager", manager)
-    navigate('/dashboard', { replace: true });
+    const { 
+      id,
+      token,
+      name,
+      manager,
+      numAccount,
+      soldAccount,
+      loanList,
+      transactionList } = await login(formState)
+    sessionStorage.setItem("token", token);
+    sessionStorage.setItem("id", id);
+    sessionStorage.setItem("name", name);
+    sessionStorage.setItem("manager", manager);
+    sessionStorage.setItem("numAccount", numAccount);
+    sessionStorage.setItem("soldAccount", soldAccount);
+    sessionStorage.setItem("loanList", loanList);
+    sessionStorage.setItem("transactionList", transactionList);
+    navigate('/dashboard/app', { replace: true });
   };
 
   return (

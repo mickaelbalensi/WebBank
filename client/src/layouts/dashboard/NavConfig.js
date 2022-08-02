@@ -21,16 +21,27 @@ const navConfig = [
     path: '/dashboard/user',
     icon: getIcon('eva:people-fill'),
   },
-  // {
-  //   title: 'login',
-  //   path: '/login',
-  //   icon: getIcon('eva:lock-fill'),
-  // },
-  // {
-  //   title: 'register',
-  //   path: '/register',
-  //   icon: getIcon('eva:person-add-fill'),
-  // }
+  {
+    title: 'loans',
+    path: '/dashboard/loans',
+    icon: getIcon('bx:transfer-alt'),
+  },
+  {
+    title: 'transfer',
+    path: '/dashboard/transfer',
+    icon: getIcon('fa6-solid:money-bill-trend-up'),
+  },
+  {
+    title: 'borrow',
+    path: '/dashboard/borrow',
+    icon: getIcon('fa-solid:hand-holding-usd'),
+  },
+  {
+    title: 'transactions',
+    path: '/dashboard/mytransactions',
+    icon: getIcon('mdi:bank-transfer'),
+  },
+  
 ];
 
 export default navConfig;

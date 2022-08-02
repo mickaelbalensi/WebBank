@@ -6,7 +6,7 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@
 // components
 import MenuPopover from '../../components/MenuPopover';
 // mocks_
-import account from '../../_mock/account';
+// import account from '../../_mock/account';
 
 // ----------------------------------------------------------------------
 
@@ -34,13 +34,27 @@ export default function AccountPopover() {
   const anchorRef = useRef(null);
 
   const [open, setOpen] = useState(null);
-
+  const name = sessionStorage.getItem('name') ? sessionStorage.getItem('name'): 'Authentication';
+  const [account, setAccount] = useState({
+    displayName: name,
+    email: 'demo@minimals.cc',
+    photoURL: '/static/mock-images/avatars/avatar_default.jpg',
+  });
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
+    setAccount({
+      ...account,
+      displayName: sessionStorage.getItem('name')
+    })
   };
 
   const handleClose = () => {
     setOpen(null);
+  };
+  const logout = () => {
+    sessionStorage.clear();
+    navigate("/dashboard/app");
+    handleClose();
   };
 
   return (
@@ -101,7 +115,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={logout} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </MenuPopover>

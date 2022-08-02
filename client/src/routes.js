@@ -9,6 +9,10 @@ import NotFound from './pages/Page404';
 import Register from './pages/Register';
 import DashboardApp from './pages/DashboardApp';
 import Account from './pages/Account';
+import Loan from './pages/Loan';
+import Borrow from './pages/Borrow';
+import Transfer from './pages/Transfer';
+import Transaction from './pages/Transaction';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +25,10 @@ export default function Router() {
         { path: 'app', element: <DashboardApp /> },
         { path: 'user', element: <User /> },
         { path: 'myaccount', element: <Account /> },
+        { path: 'loans', element: <Loan /> },
+        { path: 'borrow', element: <Borrow /> },
+        { path: 'transfer', element: <Transfer /> },
+        { path: 'mytransactions', element: <Transaction /> },
       ],
     },
     {
