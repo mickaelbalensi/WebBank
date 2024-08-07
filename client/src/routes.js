@@ -2,6 +2,7 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
 import LogoOnlyLayout from './layouts/LogoOnlyLayout';
+import LogoWithNavbar from './layouts/LogoWithNavbar';
 //
 import User from './pages/User';
 import Login from './pages/Login';
@@ -13,11 +14,21 @@ import Loan from './pages/Loan';
 import Borrow from './pages/Borrow';
 import Transfer from './pages/Transfer';
 import Transaction from './pages/Transaction';
+import UpdateProfile from './pages/UpdateProfile';
+import AcceptProfile from './pages/AcceptProfile';
+import Home from './pages/Home2';
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
   return useRoutes([
+    {
+      path: '/',
+      element: <LogoWithNavbar />,
+      children: [
+        { path: '/', element: <Home /> },
+      ],
+    },
     {
       path: '/dashboard',
       element: <DashboardLayout />,
@@ -29,18 +40,28 @@ export default function Router() {
         { path: 'borrow', element: <Borrow /> },
         { path: 'transfer', element: <Transfer /> },
         { path: 'mytransactions', element: <Transaction /> },
+        { path: 'updateprofile', element: <UpdateProfile /> },
+        { path: 'acceptprofile/:id', element: <AcceptProfile /> },
       ],
     },
     {
       path: '/',
       element: <LogoOnlyLayout />,
       children: [
-        { path: '/', element: <Navigate to="/dashboard/app" /> },
+        { path: 'home', element: <Home /> },
+        // { path: '/', element: <Navigate to="/dashboard/app" /> },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: '404', element: <NotFound /> },
         { path: '*', element: <Navigate to="/404" /> },
         
+      ],
+    },
+    {
+      path: '/dash',
+      element: <LogoWithNavbar />,
+      children: [
+        { path: 'home', element: <Home /> },
       ],
     },
     { path: '*', element: <Navigate to="/404" replace /> },

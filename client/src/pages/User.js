@@ -124,7 +124,6 @@ export default function User() {
   };
 
   const handleFilterByName = (event) => {
-    console.log('event.target.value : ',event.target.value);
     setFilterName(event.target.value);
   };
 

@@ -12,8 +12,13 @@ import {login} from '../../../api/auth';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
+// import {NOTIFICATIONS} from '../../../layouts/dashboard/index'
+// let modulename = import('../../../layouts/dashboard/index');
 // ----------------------------------------------------------------------
-
+export let NOTIFICATIONS = {
+  val:[],
+  set newval(v){this.val = v}
+}
 export default function LoginForm() {
   const navigate = useNavigate();
 
@@ -48,7 +53,8 @@ export default function LoginForm() {
       numAccount,
       soldAccount,
       loanList,
-      transactionList } = await login(formState)
+      transactionList,
+      notificationList } = await login(formState)
     sessionStorage.setItem("token", token);
     sessionStorage.setItem("id", id);
     sessionStorage.setItem("name", name);
@@ -57,7 +63,13 @@ export default function LoginForm() {
     sessionStorage.setItem("soldAccount", soldAccount);
     sessionStorage.setItem("loanList", loanList);
     sessionStorage.setItem("transactionList", transactionList);
-    navigate('/dashboard/app', { replace: true });
+    sessionStorage.setItem("loged", true);
+    NOTIFICATIONS.newval = notificationList;
+    if (manager)
+      navigate('/dashboard/app', { replace: true });
+    else
+    navigate('/dashboard/myaccount', { replace: true });
+
   };
 
   return (

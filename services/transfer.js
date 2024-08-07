@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const {notifyAdminEmptyAccount} = require('./notification');
 
 async function extractSold(account){
     const customerBank = await User.findOne({numAccount : account}).clone();
@@ -7,7 +8,8 @@ async function extractSold(account){
 
 async function checkSold(account,amount){
     const actualSold = await extractSold(account);
-    return actualSold >= amount
+    return  actualSold > amount ? 1 :
+            actualSold < amount ? -1 : 0
 }
 
 async function updateSold(account,amount){
@@ -51,10 +53,9 @@ async function addTransaction(bankCustomer,amount, from, creditBool){
 }
 
 async function transfer(from,to,amount){
-
-    if (await checkSold(from.numAccount,amount) == false)
+    let soldeOk = await checkSold(from.numAccount,amount);
+    if (soldeOk === -1)
         return false
-
     let extractFrom = await extractSold(from.numAccount);
     const soldFrom = parseInt(extractFrom) - amount;
     await updateSold(from.numAccount,soldFrom);
@@ -66,6 +67,8 @@ async function transfer(from,to,amount){
     await addTransaction(from,amount,to,false);
     await addTransaction(to,amount,from,true);
 
+    if (soldeOk === 0)
+        await notifyAdminEmptyAccount(from)
     return true
 }
 

@@ -1,6 +1,6 @@
-import { filter } from 'lodash';
+import _, { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import {
@@ -14,10 +14,20 @@ import {
   TableBody,
   TableCell,
   Container,
+  TextField,
   Typography,
   TableContainer,
   TablePagination,
 } from '@mui/material';
+
+import { styled } from '@mui/material/styles';
+import Alert from '@material-ui/lab/Alert';
+
+// api
+
+import {refund, borrow, transfer, loan} from '../api/bank';
+import {getinfo} from '../api/user';
+
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -25,11 +35,15 @@ import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
+import { RHFTextField } from '../components/hook-form';
+
 // mock
-import USERLIST from '../_mock/user';
-
 // ----------------------------------------------------------------------
-
+const RootStyle = styled('div')(({ theme }) => ({
+  [theme.breakpoints.up('md')]: {
+    display: 'flex',
+  },
+}));
 const TABLE_HEAD = [
   { id: 'id', label: 'Loan ID', alignRight: false },
   { id: 'borrowerAccount', label: 'Borrower', alignRight: false },
@@ -59,6 +73,8 @@ function getComparator(order, orderBy) {
 }
 
 function applySortFilter(array, comparator, query) {
+  if(array.length !== 0) {
+    array = array.loanList;}
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -71,33 +87,14 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+
 export default function Loans() {
-  const loanList = [           
-    {
-      id: "l6aycbgy",
-      borrowerAccount: 0,
-      lenderAccount: 1,
-      amount: 10,
-      status: "asked",
-      dateRequest: "01/08/2022"
-},
-{
-  id: "l6aycbgy",
-  borrowerAccount: 20,
-  lenderAccount: 1,
-  amount: 5,
-  status: "declined",
-  dateRequest: "02/08/2021"
-},
-{
-  id: "l6aycbgy",
-  borrowerAccount: 15,
-  lenderAccount: 0,
-  amount: 5,
-  status: "refund",
-  dateRequest: "01/09/2022"
-},
-]
+
+  const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const [loanList,setLoanList] = useState([]);
 
   const [page, setPage] = useState(0);
 
@@ -110,6 +107,8 @@ export default function Loans() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  
+  const [durationTime, setDuration] = useState(30);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -150,9 +149,36 @@ export default function Loans() {
     setPage(0);
   };
 
+  const handleChangeDuration = (e) => {
+    setDuration(e.target.value)
+  }
+
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
   };
+
+  const onClickRefund = async (id) => {
+    const IDLoan = {
+      id: id
+    }
+    await refund(IDLoan) 
+  };                   
+  const sumbitLoan = (id) => async (e) => {
+    const response = await loan({accept:e.target.textContent, loanID: id, duration:durationTime});
+    if (response.code === 200){
+      setError(false);
+      setSuccess(true);
+    } else {
+      setError(true);
+      setSuccess(false);
+    }
+    setMessage(response.message);
+  }
+
+  useEffect( () => { 
+    getinfo({field :  ['loanList']})
+    .then((info) => setLoanList(info));
+  },[])
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - loanList.length) : 0;
 
@@ -174,10 +200,19 @@ export default function Loans() {
 
         <Card>
           <UserListToolbar 
-          // numSelected={selected.length} 
           filterName={filterName} onFilterName={handleFilterByName} />
 
           <Scrollbar>
+            { error &&
+              <Alert variant="filled" severity={"error"}>
+                {message}
+              </Alert> 
+            }
+            { success &&
+              <Alert variant="filled" severity={"success"}>
+                {message}
+              </Alert> 
+            }
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
                 <UserListHead
@@ -185,14 +220,13 @@ export default function Loans() {
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
                   rowCount={loanList.length}
-                  // numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
+
                 <TableBody>
                   {filteredLoans.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { id, borrowerAccount, lenderAccount, amount, status, dateRequest, dateLoan, duration } = row;
-                    // const isItemSelected = selected.indexOf(row.borrowerAccount) !== -1;
 
                     return (
                       <TableRow
@@ -200,32 +234,40 @@ export default function Loans() {
                         key={id}
                         tabIndex={-1}
                         role="checkbox"
-                      //  selected={isItemSelected}
-                      //  aria-checked={isItemSelected}
                       >
-                        {/* <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, borrowerAccount)} />
-                        </TableCell> */}
                         <TableCell align="left">{id}</TableCell>
                         <TableCell align="left">{borrowerAccount}</TableCell>
-                        {/* <TableCell component="th" scope="row" padding="25">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            {/* <Avatar alt={row.borrowerAccount} src={avatarUrl} /> *}
-                            <Typography variant="subtitle2" noWrap>
-                              {borrowerAccount}
-                            </Typography>
-                          </Stack>
-                        </TableCell> */}
+
                         <TableCell align="left">{lenderAccount}</TableCell>
                         <TableCell align="left">{amount}</TableCell>
-                        <TableCell align="left">{dateRequest}</TableCell>
-                        {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
+                        <TableCell align="left">{dateRequest.slice(0,10)}</TableCell>
                         <TableCell align="left">
                           <Label variant="ghost" color={(status === 'declined' && 'error') || 'success'}>
                             {sentenceCase(status)}
                           </Label>
                         </TableCell>
 
+                        <TableCell>
+                        
+                          {
+
+                          status === 'asked' && sessionStorage.getItem("numAccount") == lenderAccount &&
+                          <RootStyle>
+                            <TextField name="Time to refund" label="Time to refund" value={durationTime} onChange={handleChangeDuration} required/>
+                            <Button variant="contained" onClick={sumbitLoan(id)}color="success" >
+                              accept
+                            </Button>
+                            <Button variant="contained" onClick={sumbitLoan(id)} color="error">
+                              decline
+                            </Button>
+                          </RootStyle>}
+                        </TableCell>
+                        <TableCell>{
+                          status === 'loaned' &&  sessionStorage.getItem("numAccount") == borrowerAccount &&
+                          <Button variant="contained" color="secondary" onClick={ () =>{ onClickRefund(id)}} >
+                            refund
+                          </Button>}
+                        </TableCell>
                         <TableCell align="right">
                           <UserMoreMenu />
                         </TableCell>

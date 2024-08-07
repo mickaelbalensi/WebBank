@@ -2,7 +2,9 @@ import PropTypes from 'prop-types';
 import { set, sub } from 'date-fns';
 import { noCase } from 'change-case';
 import { faker } from '@faker-js/faker';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect} from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+
 // @mui
 import {
   Box,
@@ -26,63 +28,23 @@ import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/Scrollbar';
 import MenuPopover from '../../components/MenuPopover';
 
+import { markAllAsRead } from 'src/api/bank';
 // ----------------------------------------------------------------------
-
-const NOTIFICATIONS = [
-  {
-    id: faker.datatype.uuid(),
-    title: 'Your order is placed',
-    description: 'waiting for shipping',
-    avatar: null,
-    type: 'order_placed',
-    createdAt: set(new Date(), { hours: 10, minutes: 30 }),
-    isUnRead: true,
-  },
-  {
-    id: faker.datatype.uuid(),
-    title: faker.name.findName(),
-    description: 'answered to your comment on the Minimal',
-    avatar: '/static/mock-images/avatars/avatar_2.jpg',
-    type: 'friend_interactive',
-    createdAt: sub(new Date(), { hours: 3, minutes: 30 }),
-    isUnRead: true,
-  },
-  {
-    id: faker.datatype.uuid(),
-    title: 'You have new message',
-    description: '5 unread messages',
-    avatar: null,
-    type: 'chat_message',
-    createdAt: sub(new Date(), { days: 1, hours: 3, minutes: 30 }),
-    isUnRead: false,
-  },
-  {
-    id: faker.datatype.uuid(),
-    title: 'You have new mail',
-    description: 'sent from Guido Padberg',
-    avatar: null,
-    type: 'mail',
-    createdAt: sub(new Date(), { days: 2, hours: 3, minutes: 30 }),
-    isUnRead: false,
-  },
-  {
-    id: faker.datatype.uuid(),
-    title: 'Delivery processing',
-    description: 'Your order is being shipped',
-    avatar: null,
-    type: 'order_shipped',
-    createdAt: sub(new Date(), { days: 3, hours: 3, minutes: 30 }),
-    isUnRead: false,
-  },
-];
+import {getinfo} from '../../api/user'
+// import {NOTIFICATIONS} from '../../layouts/dashboard/index'
+import {NOTIFICATIONS} from '../../sections/auth/login/LoginForm'
 
 export default function NotificationsPopover() {
+  const navigate = useNavigate();
+
   const anchorRef = useRef(null);
 
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [notifications, setNotifications] = useState(NOTIFICATIONS.val);
 
-  const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
-
+  const [totalUnRead,setTotalUnRead] = useState(notifications.filter((item) => item.isUnRead === true).length);
+  
+  const [totalNotif,setTotalNotif] = useState(notifications.length);
+  
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {
@@ -91,6 +53,7 @@ export default function NotificationsPopover() {
 
   const handleClose = () => {
     setOpen(null);
+    handleMarkAllAsRead();
   };
 
   const handleMarkAllAsRead = () => {
@@ -100,8 +63,19 @@ export default function NotificationsPopover() {
         isUnRead: false,
       }))
     );
+    const idList = notifications.map((notif)=> notif._id);
+    markAllAsRead({ids : idList});
   };
-
+  // const onClicked =(fromID )=>{
+  //   fromID && navigate(`/dashboard/acceptprofile/${fromID}`)
+  // }
+  useEffect(()=>{
+    sessionStorage.getItem("numAccount") !== null && 
+    getinfo({field:['notificationList']})
+      .then((info)=> setNotifications(info.notificationList)).catch((e)=>{console.log(e);});
+    setTotalUnRead(notifications.filter((item) => item.isUnRead === true).length)
+    setTotalNotif(notifications.length)
+  })
   return (
     <>
       <IconButton
@@ -149,7 +123,7 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notifications.slice(0, 2).map((notification) => (
+            {notifications.slice(0, totalUnRead).map((notification) => (
               <NotificationItem key={notification.id} notification={notification} />
             ))}
           </List>
@@ -162,7 +136,7 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notifications.slice(2, 5).map((notification) => (
+            {notifications.slice(totalUnRead, 5).map((notification) => (
               <NotificationItem key={notification.id} notification={notification} />
             ))}
           </List>
@@ -206,7 +180,10 @@ function NotificationItem({ notification }) {
         ...(notification.isUnRead && {
           bgcolor: 'action.selected',
         }),
+        
       }}
+      component={RouterLink}
+      to={`/dashboard/acceptprofile/${notification.fromID}`}
     >
       <ListItemAvatar>
         <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>

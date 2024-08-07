@@ -41,7 +41,7 @@ const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
 DashboardNavbar.propTypes = {
   onOpenSidebar: PropTypes.func,
 };
-
+// alert(sessionStorage.getItem("numAccount"))
 export default function DashboardNavbar({ onOpenSidebar }) {
   return (
     <RootStyle>
@@ -54,10 +54,9 @@ export default function DashboardNavbar({ onOpenSidebar }) {
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <AuthPopover/>        
-          <LanguagePopover />
-          <NotificationsPopover />
-          <AccountPopover />
+          {sessionStorage.getItem("numAccount") === null &&  <AuthPopover/>}      
+          {sessionStorage.getItem("numAccount") !== null && <NotificationsPopover />}
+          {sessionStorage.getItem("numAccount") !== null && <AccountPopover />}
         </Stack>
       </ToolbarStyle>
     </RootStyle>

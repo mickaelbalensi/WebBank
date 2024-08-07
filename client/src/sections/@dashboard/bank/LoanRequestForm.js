@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import Alert from '@material-ui/lab/Alert';
 // api
 import {borrow} from '../../../api/bank';
 // components
@@ -17,10 +18,14 @@ import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hoo
 export default function LoanRequestForm() {
   const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);  
+  const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState('');
+
   const [formState, setFormState] = useState({
-    lenderNumAccount: "",
-    amount: "",
+    numAccount: "",
+    amountLoan: "",
   })
 
   const methods = useForm({
@@ -36,8 +41,15 @@ export default function LoanRequestForm() {
 
 
   const onSubmit = async () => {
-    await borrow(formState)
-    navigate('/dashboard/app', { replace: true });
+    const response = await borrow(formState);
+    if (response.code === 200){
+      setError(false);
+      setSuccess(true);
+    } else {
+      setError(true);
+      setSuccess(false);
+    }
+    setMessage(response.message);
   };
 
   const handleChange = (e) =>
@@ -49,8 +61,18 @@ export default function LoanRequestForm() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
-        <RHFTextField name="lenderNumAccount" label="Num account of the lender" value={formState.lenderNumAccount} onChange={handleChange} required/>
-        <RHFTextField name="amount" label="Amount to borrow" value={formState.amount} onChange={handleChange} required/>
+        { error &&
+          <Alert variant="filled" severity={"error"}>
+            {message}
+          </Alert> 
+        }
+        { success &&
+          <Alert variant="filled" severity={"success"}>
+            {message}
+          </Alert> 
+        }
+        <RHFTextField name="numAccount" label="Num account of the lender" value={formState.numAccount} onChange={handleChange} required/>
+        <RHFTextField name="amountLoan" label="Amount to borrow" value={formState.amountLoan} onChange={handleChange} required/>
 
         <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
         Borrow

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@mui/material';
@@ -19,7 +19,7 @@ const MENU_OPTIONS = [
   {
     label: 'Profile',
     icon: 'eva:person-fill',
-    linkTo: '#',
+    linkTo: '/dashboard/updateprofile',
   },
   {
     label: 'Settings',
@@ -32,7 +32,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const anchorRef = useRef(null);
-
+  const navigate = useNavigate();
   const [open, setOpen] = useState(null);
   const name = sessionStorage.getItem('name') ? sessionStorage.getItem('name'): 'Authentication';
   const [account, setAccount] = useState({
@@ -53,7 +53,7 @@ export default function AccountPopover() {
   };
   const logout = () => {
     sessionStorage.clear();
-    navigate("/dashboard/app");
+    navigate("/d");
     handleClose();
   };
 

@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 //
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
-
 // ----------------------------------------------------------------------
+import {getinfo} from '../../api/user';
 
 const APP_BAR_MOBILE = 64;
 const APP_BAR_DESKTOP = 92;
@@ -31,10 +31,16 @@ const MainStyle = styled('div')(({ theme }) => ({
 }));
 
 // ----------------------------------------------------------------------
+import * as Log from '../../sections/auth/login/LoginForm'
+//export let NOTIFICATIONS = [];
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-
+  // useEffect(()=>{
+  //   sessionStorage.getItem("numAccount") !== null && 
+  //   // getinfo({field:['notificationList']})
+  //   //   .then((info)=> Log.NOTIFICATIONS.newval = info.notificationList).catch((e)=>{console.log(e);});
+  // },[])
   return (
     <RootStyle>
       <DashboardNavbar onOpenSidebar={() => setOpen(true)} />

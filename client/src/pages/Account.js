@@ -1,7 +1,10 @@
 import { faker } from '@faker-js/faker';
+import { useState, useEffect } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 // components
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
@@ -17,23 +20,30 @@ import {
   AppCurrentSubject,
   AppConversionRates,
 } from '../sections/@dashboard/app';
+import {getinfo} from '../api/user';
 
 // ----------------------------------------------------------------------
 
 export default function Account() {
   const theme = useTheme();
-  const amount = sessionStorage.getItem("soldAccount")
+  // const amount = sessionStorage.getItem("soldAccount")
   const account = sessionStorage.getItem("numAccount")
+  const [myamount, setAmount] = useState(0);
+
+  useEffect (() => {
+      getinfo({field : ["soldAccount"]})
+      .then((info)=> setAmount(info.soldAccount)).catch((e)=>{console.log(e);})
+  }, []);
+  
   return (
     <Page title="Dashboard">
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
           Count Number : {account}
-        </Typography>
-
+        </Typography>        
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Weekly Sales" total={amount} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Weekly Sales" total={myamount} icon={'ant-design:android-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>

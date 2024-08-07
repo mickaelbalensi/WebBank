@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import Alert from '@material-ui/lab/Alert';
 // api
 import {transfer} from '../../../api/bank';
 // components
@@ -18,6 +19,10 @@ export default function TransferForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState('');
+
   const [formState, setFormState] = useState({
     dest: "",
     amount: "",
@@ -27,8 +32,6 @@ export default function TransferForm() {
     mode: onchange,
   });
 
-  
-
   const {
     handleSubmit,
     formState: { isSubmitting },
@@ -36,8 +39,17 @@ export default function TransferForm() {
 
 
   const onSubmit = async () => {
-    await transfer(formState)
-    navigate('/dashboard/app', { replace: true });
+    const response = await transfer(formState);
+    if (response.code === 200){
+      setError(false);
+      setSuccess(true);
+    } else {
+      setError(true);
+      setSuccess(false);
+    }
+    setMessage(response.message);
+    
+    // navigate('/dashboard/app', { replace: true });
   };
 
   const handleChange = (e) =>
@@ -49,8 +61,18 @@ export default function TransferForm() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
-        <RHFTextField name="dest" label="Destination" value={formState.lenderNumAccount} onChange={handleChange} required/>
-        <RHFTextField name="amount" label="Amount to transfer" value={formState.amount} onChange={handleChange} required/>
+        { error &&
+          <Alert variant="filled" severity={"error"}>
+            {message}
+          </Alert> 
+        }
+        { success &&
+          <Alert variant="filled" severity={"success"}>
+            {message}
+          </Alert> 
+        }
+        <RHFTextField name="dest" label="Destination" value={success && '' || formState.lenderNumAccount} onChange={handleChange} required/>
+        <RHFTextField name="amount" label="Amount to transfer" value={success && '' || formState.amount} onChange={handleChange} required/>
 
         <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
             Transfer

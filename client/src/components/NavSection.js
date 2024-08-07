@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink as RouterLink, matchPath, useLocation } from 'react-router-dom';
 // material
@@ -143,14 +143,20 @@ export default function NavSection({ navConfig, ...other }) {
   const { pathname } = useLocation();
 
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
-  const manager = sessionStorage.getItem('manager');
+  const manager = sessionStorage.getItem('manager')==='true';
+
   return (
     <Box {...other}>
-      <List disablePadding sx={{ p: 1 }}>
-        {navConfig.map((item) => 
-            (item.title !== 'dashboard' || manager) &&(
+      <List disablePadding sx={{ p: 1 }}>{
+        manager &&
+         navConfig.map((item) => 
+            (item.title === 'dashboard' || item.title === 'user') &&
             <NavItem key={item.title} item={item} active={match} />
-          ))}
+          ) 
+          || !manager && navConfig.map((item) => 
+          (item.title !== 'dashboard' && item.title !== 'user') &&
+          <NavItem key={item.title} item={item} active={match} />
+        )} 
       </List>
     </Box>
   );

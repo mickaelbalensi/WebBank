@@ -14,6 +14,7 @@ import { register } from '../../../api/auth';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
+import CurrencyTextField from '@kylebeikirch/material-ui-currency-textfield'
 
 // ----------------------------------------------------------------------
 
@@ -25,13 +26,13 @@ export default function RegisterForm() {
     name: "",
     userName: "",
     password: "",
+    amount: ""
   })
 
-
-  const [firstName, setName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // const [firstName, setName] = useState("");
+  // const [lastName, setLastName] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
 
   const methods = useForm({
      mode: 'onChange',
@@ -52,7 +53,7 @@ export default function RegisterForm() {
   } = methods;
 
   const onSubmit = async () => {
-    register(formState) 
+    await register(formState) 
     navigate('/dashboard', { replace: true });
   };
    
@@ -83,7 +84,19 @@ export default function RegisterForm() {
             ),
           }}
         />
-
+        <CurrencyTextField
+          name="amount"
+          label="Amount"
+          variant="standard"
+          value={formState.amount}
+          currencySymbol="₪"
+          //minimumValue="0"
+          // outputFormat="string"
+          // decimalCharacter="."
+          // digitGroupSeparator=","
+          onChange={handleChange}
+          required
+              />
         <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
           Register
         </LoadingButton>

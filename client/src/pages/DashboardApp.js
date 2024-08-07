@@ -18,10 +18,20 @@ import {
   AppConversionRates,
 } from '../sections/@dashboard/app';
 
+import { useEffect, useState} from 'react';
+import {bankInfo} from '../api/user';
 // ----------------------------------------------------------------------
 
 export default function DashboardApp() {
   const theme = useTheme();
+  // const [bankInformation, setBankInfo] = useState({
+  // })
+
+  // useEffect(()=> {
+  //   bankInfo()
+  //   .then((info)=> setBankInfo(info)).catch((e)=>{
+  //     console.log('err',e);})  
+  // },[])
 
   return (
     <Page title="Dashboard">
@@ -32,19 +42,19 @@ export default function DashboardApp() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Weekly Sales" total={714000} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Number of Customers" total={8} icon={'ant-design:android-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="New Users" total={1352831} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Total LevCoin in circulation" total={58624} color="info" icon={'ant-design:apple-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Item Orders" total={1723315} color="warning" icon={'ant-design:windows-filled'} />
+            <AppWidgetSummary title="Number of Loans" total={4} color="warning" icon={'ant-design:windows-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Bug Reports" total={234} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Number of Transaction" total={48} color="error" icon={'ant-design:bug-filled'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>

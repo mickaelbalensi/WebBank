@@ -34,11 +34,11 @@ module.exports = {
     },
 
     IsManager : async (req, res, next) => {
-        if (req.user.manager === false)
+        if (req.user.isAdmin === false)
             return res.status(403).end("You must be a manager");
-
         next();
     },
+    
     TotalBankAccount : async(req,res,next)=>{ 
         const listUsers = await User.find(); 
         const length = listUsers.length; 

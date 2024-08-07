@@ -41,6 +41,7 @@ const navConfig = [
     path: '/dashboard/mytransactions',
     icon: getIcon('mdi:bank-transfer'),
   },
+
   
 ];
 

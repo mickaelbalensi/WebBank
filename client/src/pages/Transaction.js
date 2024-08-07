@@ -1,6 +1,6 @@
-import { filter } from 'lodash';
+import { concat, filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import {
@@ -18,6 +18,13 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
+
+
+//api
+import {getinfo} from '../api/user';
+
+
+
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -57,6 +64,8 @@ function getComparator(order, orderBy) {
 }
 
 function applySortFilter(array, comparator, query) {
+  if(array.length !== 0) {
+    array = array.transactionList;}
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -70,70 +79,11 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function Transaction() {
-  const transactionList = [           
-    {
-      date:'2022-07-31',
-      acutalAmount: 200,
-      debit: '',
-      credit: '+20₪',
-      bankCustomer: "user2"
-    },
-    {
-      date:'2022-07-31',
-      acutalAmount: 150,
-      debit: '',
-      credit: '20',
-      bankCustomer: "user2"
-    },
-    {
-      date:'2022-07-31',
-      acutalAmount: 130,
-      credit: '',
-      debit: '20',
-      bankCustomer: "user2"
-    },
-    {
-      date:'2022-07-31',
-      acutalAmount: 200,
-      debit: '',
-      credit: '20',
-      bankCustomer: "user2"
-    },
-    {
-      date:'2022-07-31',
-      acutalAmount: 200,
-      credit: '',
-      debit: '30',
-      bankCustomer: "sarah"
-    },
-    {
-      date:'2022-07-31',
-      acutalAmount: 200,
-      debit: '',
-      credit: '50',
-      bankCustomer: "micko"
-    },
-    {
-      date:'2022-07-31',
-      acutalAmount: 200,
-      debit: '',
-      credit: '10',
-      bankCustomer: "aviel"
-    },
-    {
-      date:'2022-07-31',
-      acutalAmount: 200,
-      credit: '',
-      debit: '20',
-      bankCustomer: "nathane"
-    },
-  ]
+  const [transactionList, setTransactionList] = useState([]);
 
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
-
-  //const [selected, setSelected] = useState([]);
 
   const [orderBy, setOrderBy] = useState('id');
 
@@ -143,6 +93,7 @@ export default function Transaction() {
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
+    
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
@@ -154,21 +105,6 @@ export default function Transaction() {
       return;
     }
     setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -184,6 +120,11 @@ export default function Transaction() {
     setFilterName(event.target.value);
   };
 
+  
+  useEffect( () => { 
+    getinfo({field :  ['transactionList']}).then((info) => setTransactionList(info));
+  })
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - transactionList.length) : 0;
 
   const filteredTransactions = applySortFilter(transactionList, getComparator(order, orderBy), filterName);
@@ -195,16 +136,12 @@ export default function Transaction() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Loan
+            Transactions History
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:plus-fill" />}>
-            Borrow
-          </Button>
         </Stack>
 
         <Card>
           <UserListToolbar 
-          // numSelected={selected.length} 
           filterName={filterName} onFilterName={handleFilterByName} />
 
           <Scrollbar>
@@ -215,9 +152,7 @@ export default function Transaction() {
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
                   rowCount={transactionList.length}
-                  // numSelected={selected.length}
                   onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                   {filteredTransactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
@@ -230,22 +165,20 @@ export default function Transaction() {
                         tabIndex={-1}
                         role="checkbox"
                       >
-                        <TableCell align="left">{date}</TableCell>
+                        <TableCell align="left">{date.slice(0,10)}</TableCell>
                         <TableCell align="left">{acutalAmount}</TableCell>
-                        {/* <TableCell align="left">{credit}</TableCell> */}
                         <TableCell align="left">
-                          {credit !== '' &&
+                          {credit !== undefined &&
                           <Label variant="ghost" color={(credit === '' && 'error') || 'success'}>
-                            {sentenceCase('+'+credit+'₪')}
+                            {'+ '+ credit + ' LevCoins'}
                           </Label>}
                         </TableCell>
                         <TableCell align="left">
-                          {credit === '' &&
-                            <Label variant="ghost" color={(credit === '' && 'error') || 'success'}>
-                              {sentenceCase(`-{debit}₪`)}
+                          {credit === undefined &&
+                            <Label variant="ghost" color={(credit === undefined && 'error') || 'success'}>
+                              {'- '+ debit + ' LevCoins'}
                             </Label>}
                         </TableCell>
-                        {/* <TableCell align="left">{debit}</TableCell> */}
                         <TableCell align="left">{bankCustomer}</TableCell>
 
                         <TableCell align="right">
@@ -288,3 +221,6 @@ export default function Transaction() {
     </Page>
   );
 }
+
+
+// ''.concat('+', '₪')
